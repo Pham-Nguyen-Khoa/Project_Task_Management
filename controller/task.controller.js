@@ -1,5 +1,6 @@
 const Task = require("../models/task.model");
 const paginationHelper = require("../helpers/paginationHelper");
+const searchHelper = require("../helpers/searchHelper");
 /**
  * @swagger
  * /tasks:
@@ -8,6 +9,12 @@ const paginationHelper = require("../helpers/paginationHelper");
  *       - Tasks
  *     summary: Lấy danh sách tất cả tasks chưa bị xóa
  *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Tìm kiếm theo tên công việc (VD Code payment, Code FE Home)
  *       - in: query
  *         name: status
  *         schema:
@@ -31,7 +38,7 @@ const paginationHelper = require("../helpers/paginationHelper");
  *         schema:
  *           type: number
  *         required: false
- *         description: Tổng số task trên 1 trang mặc định 2 task (VD limit = 2 , limit = 3) 
+ *         description: Tổng số task trên 1 trang mặc định 2 task (VD limit = 2 , limit = 3)
  *       - in: query
  *         name: page
  *         schema:
@@ -79,32 +86,56 @@ module.exports.index = async (req, res) => {
   const find = {
     deleted: false,
   };
-  const limit = 2;
+  let searchObject = searchHelper(req.query);
+  //   Filter Status
   if (req.query.status) {
     find.status = req.query.status;
   }
+  //  End Filter Status
+
+  // Sort
   const sort = {};
-  
+
   if (req.query.sortKey && req.query.sortValue) {
     const key = req.query.sortKey;
     const value = req.query.sortValue;
     sort[key] = value;
   }
-  //Pagination
+  // End Sort
+
+  // Search Keyword
+  if (req.query.keyword) {
+    find.title = searchObject.regex;
+    
+  }
+  // End Search Keyword
+
+  // Pagination
   let initPagination = {
     currentPage: 1,
-    limitItems: 2   
-  }
-  const countTasks = await Task.countDocuments(find)
-  const paginationObject = paginationHelper(initPagination, req.query, countTasks)
-  const getAllTask = await Task.find(find).sort(sort).limit(paginationObject.limitItems).skip(paginationObject.skip);
+    limitItems: 2,
+  };
+  const countTasks = await Task.countDocuments(find);
+  const paginationObject = paginationHelper(
+    initPagination,
+    req.query,
+    countTasks
+  );
+
+  // End Pagination
+
+  const getAllTask = await Task.find(find)
+    .sort(sort)
+    .limit(paginationObject.limitItems)
+    .skip(paginationObject.skip);
   const data = {
     getAllTasks: getAllTask,
-    totalPage : paginationObject.totalPage
-  }
+    totalPage: paginationObject.totalPage,
+  };
   res.json(data);
 };
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 /**
  * @swagger
  * /tasks/detail/{id}:
