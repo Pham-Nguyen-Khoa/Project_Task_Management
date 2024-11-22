@@ -1,7 +1,4 @@
-
-
 const Task = require("../models/task.model");
-
 
 /**
  * @swagger
@@ -53,22 +50,26 @@ const Task = require("../models/task.model");
  *                     example: false
  */
 
-
 // [GET] localhost:3000/tasks
-module.exports.index =  async (req,res) => {
-    console.log(req.query)
-    const find = {
-        deleted: false
-    }
-    if(req.query.status){
-        find.status = req.query.status;
-    }
-  const getAllTask = await Task.find(find);
- 
+module.exports.index = async (req, res) => {
+  console.log(req.query);
+  const find = {
+    deleted: false,
+  };
+  if (req.query.status) {
+    find.status = req.query.status;
+  }
+  const sort = {};
+  if (req.query.sortKey && req.query.sortValue) {
+    const key = req.query.sortKey;
+    const value = req.query.sortValue;
+    sort[key] = value;
+  }
+  console.log(sort);
+  const getAllTask = await Task.find(find).sort(sort);
+
   res.json(getAllTask);
-}
-
-
+};
 
 /**
  * @swagger
@@ -121,13 +122,11 @@ module.exports.index =  async (req,res) => {
  */
 // [GET] localhost:3000/tasks/detail/:id
 module.exports.detail = async (req, res) => {
-    try {
-        const id = req.params.id;
-        const getTask = await Task.findOne({ _id: id, deleted: false });
-        return res.json(getTask);
-    } catch (error) {
-        res.json("Không tìm thấy")
-    }
-
-
-}
+  try {
+    const id = req.params.id;
+    const getTask = await Task.findOne({ _id: id, deleted: false });
+    return res.json(getTask);
+  } catch (error) {
+    res.json("Không tìm thấy");
+  }
+};
