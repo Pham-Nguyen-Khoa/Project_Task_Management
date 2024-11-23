@@ -355,22 +355,25 @@ module.exports.changeMulti = async (req, res) => {
         message: "Không có id ",
       });
     }
-    const arrStatus = [
-      "initial",
-      "doing",
-      "finish",
-      "pending",
-      "notFinish",
-      "true",
-      "false",
-    ];
-    const checkStatus = arrStatus.includes(value);
-    if (!checkStatus) {
-      return res.json({
-        code: 400,
-        message: "Không có trạng thái đó",
-      });
+    if(value){
+      const arrStatus = [
+        "initial",
+        "doing",
+        "finish",
+        "pending",
+        "notFinish",
+        "true",
+        "false",
+      ];
+      const checkStatus = arrStatus.includes(value);
+      if (!checkStatus) {
+        return res.json({
+          code: 400,
+          message: "Không có trạng thái đó",
+        });
+      }
     }
+  
     switch (key) {
       case "status":
         await Task.updateMany(
@@ -393,7 +396,8 @@ module.exports.changeMulti = async (req, res) => {
             _id: { $in: ids },
           },
           {
-            deleted: value,
+            deleted: true,
+            deletedAt: new Date()
           }
         );
         res.json({
