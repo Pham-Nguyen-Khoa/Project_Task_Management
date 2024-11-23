@@ -16,9 +16,14 @@ const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Task Management API',
-            version: '1.0.0',
-            description: 'API quản lý các tasks',
+        title: 'Task Management API',
+        version: '1.0.0',
+        description: 'API quản lý các công việc. Bao gồm các chức năng như thay đổi trạng thái, xóa công việc, v.v.',
+        contact: {
+            name: 'Support Team',
+            url: 'http://localhost',
+            email: 'support@example.com',
+        },
         },
         servers: [
             { url: `http://localhost:${port}` }, // URL server của bạn

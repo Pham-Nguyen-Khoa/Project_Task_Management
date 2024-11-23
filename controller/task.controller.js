@@ -106,7 +106,6 @@ module.exports.index = async (req, res) => {
   // Search Keyword
   if (req.query.keyword) {
     find.title = searchObject.regex;
-    
   }
   // End Search Keyword
 
@@ -196,7 +195,6 @@ module.exports.detail = async (req, res) => {
   }
 };
 
-
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 /**
  * @swagger
@@ -225,8 +223,8 @@ module.exports.detail = async (req, res) => {
  *                 example: doing
  *     responses:
  *       200:
- *         description: Cập nhật trạng thái thành công 
- *         content: 
+ *         description: Cập nhật trạng thái thành công
+ *         content:
  *           application/json:
  *             schema:
  *              type: object
@@ -236,10 +234,10 @@ module.exports.detail = async (req, res) => {
  *                     example: 200
  *                   message:
  *                     type: string
- *                     example: "Cập nhật trạng thái thành công"       
+ *                     example: "Cập nhật trạng thái thành công"
  *       404:
- *         description: Cập nhật trạng thái thất bại 
- *         content: 
+ *         description: Cập nhật trạng thái thất bại
+ *         content:
  *           application/json:
  *             schema:
  *               type: object
@@ -249,7 +247,7 @@ module.exports.detail = async (req, res) => {
  *                     example: 400
  *                   message:
  *                     type: string
- *                     example: "Cập nhật trạng thái thất bại "    
+ *                     example: "Cập nhật trạng thái thất bại "
  */
 
 // [PATCH] localhost:3000/tasks/change-status/:id
@@ -257,29 +255,162 @@ module.exports.changeStatus = async (req, res) => {
   try {
     const id = req.params.id;
     const status = req.body.status;
-    const arrStatus = ["initial", "doing" , "finish", "pending" , "notFinish"];
+    const arrStatus = ["initial", "doing", "finish", "pending", "notFinish"];
     const checkStatus = arrStatus.includes(status);
-    if(!checkStatus){
+    if (!checkStatus) {
       return res.json({
         code: 400,
-        message: "Không có trạng thái đó"
-    })
+        message: "Không có trạng thái đó",
+      });
     }
-      await Task.updateOne({
+    await Task.updateOne(
+      {
         _id: id,
-        deleted: false
-      },{
-        status: status
-      })
-    
+        deleted: false,
+      },
+      {
+        status: status,
+      }
+    );
+
     res.json({
-        code: 200,
-        message: "Cập nhật trạng thái thành công"
-    })
+      code: 200,
+      message: "Cập nhật trạng thái thành công",
+    });
   } catch (error) {
     res.json({
       code: 400,
-      message: "Không tồn tại"
+      message: "Không tồn tại",
+    });
+  }
+};
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @swagger
+ * /tasks/change-multi:
+ *   patch:
+ *     tags:
+ *       - Tasks
+ *     summary: Thay đổi trạng thái hoặc xóa nhiều công việc cùng lúc
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ids:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Mảng chứa các ID của công việc cần thay đổi
+ *                 example: ["67404d953cc3cb08f59f9b3d", "67404d953cc3cb08f59f9b3e"]
+ *               key:
+ *                 type: string
+ *                 enum: [status, delete]
+ *                 description: Loại thao tác cần thực hiện (thay đổi trạng thái hoặc xóa)
+ *                 example: "status"
+ *               value:
+ *                 type: string
+ *                 description: Giá trị mới cho `key` (ví dụ trạng thái hoặc xóa)
+ *                 enum: [initial, doing, finish, pending, notFinish, true, false]
+ *                 example: "doing"
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Cập nhật trạng thái 2 công việc thành công"
+ *       400:
+ *         description: Lỗi yêu cầu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Không có trạng thái đó"
+ */
+// [PATCH] localhost:3000/tasks/change-multi/
+module.exports.changeMulti = async (req, res) => {
+  try {
+    const { ids, key, value } = req.body;
+    const countIDs = ids.length;
+    if (countIDs == 0) {
+      return res.json({
+        code: 400,
+        message: "Không có id ",
+      });
+    }
+    const arrStatus = [
+      "initial",
+      "doing",
+      "finish",
+      "pending",
+      "notFinish",
+      "true",
+      "false",
+    ];
+    const checkStatus = arrStatus.includes(value);
+    if (!checkStatus) {
+      return res.json({
+        code: 400,
+        message: "Không có trạng thái đó",
+      });
+    }
+    switch (key) {
+      case "status":
+        await Task.updateMany(
+          {
+            _id: { $in: ids },
+          },
+          {
+            status: value,
+          }
+        );
+        res.json({
+          code: 200,
+          message: `Cập nhật trạng thái  ${countIDs} công việc thành công`,
+        });
+        break;
+
+      case "delete":
+        await Task.updateMany(
+          {
+            _id: { $in: ids },
+          },
+          {
+            deleted: value,
+          }
+        );
+        res.json({
+          code: 200,
+          message: `Xóa ${countIDs} công việc thành công`,
+        });
+        break;
+      default:
+        res.json({
+          code: 400,
+          message: "Không tồn tại"
+        })
+    }
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Cập nhật trạng thái thất bại",
     });
   }
 };
