@@ -404,13 +404,115 @@ module.exports.changeMulti = async (req, res) => {
       default:
         res.json({
           code: 400,
-          message: "Không tồn tại"
-        })
+          message: "Không tồn tại",
+        });
     }
   } catch (error) {
     res.json({
       code: 400,
       message: "Cập nhật trạng thái thất bại",
+    });
+  }
+};
+
+
+
+
+
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @swagger
+ * /tasks/create:
+ *   post:
+ *     tags:
+ *       - Tasks
+ *     summary: Tạo công việc
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: String
+ *                 description: Tên công việc 
+ *                 example: Công việc ABC
+ *               status:
+ *                 type: string
+ *                 description: Trạng thái công việc (initial, pending, doing, finish, notFinish)
+ *                 example: "initial"
+ *               timeStart:
+ *                 type: Date
+ *                 description: Thời gian bắt đầu công việc 
+ *                 example: "2023-09-18T14:43:01.579+00:00"
+ *               timeFinish:
+ *                 type: Date
+ *                 description: Thời gian kết thúc công việc 
+ *                 example: "2023-09-18T14:43:01.579+00:00"
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Tạo công việc thành công!"
+ *                 data: 
+ *                    type: object
+ *                    properties: 
+ *                      title:
+ *                       type: String
+ *                       description: Tên công việc 
+ *                       example: Công việc ABC
+ *                      status:
+ *                       type: string
+ *                       description: Trạng thái công việc (initial, pending, doing, finish, notFinish)
+ *                       example: "initial"
+ *                      timeStart:
+ *                       type: Date
+ *                       description: Thời gian bắt đầu công việc 
+ *                       example: "2023-09-18T14:43:01.579+00:00"
+ *                      timeFinish:
+ *                       type: Date
+ *                       description: Thời gian kết thúc công việc 
+ *                       example: "2023-09-18T14:43:01.579+00:00"
+ *                  
+ *       400:
+ *         description: Lỗi yêu cầu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Tạo công việc thất bại"
+ */
+// [POST] localhost:3000/tasks/create/
+module.exports.createPost = async (req, res) => {
+  try {
+    const task = new Task(req.body);
+    const data = await task.save();
+    res.json({
+      code: 200,
+      message: "Tạo công việc thành công!",
+      data: data
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Tạo công việc thất bại!",
     });
   }
 };
