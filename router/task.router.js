@@ -6,4 +6,6 @@ router.get("/", taskController.index);
 
 router.get("/detail/:id", taskController.detail );
 
+router.patch("/change-status/:id", taskController.changeStatus );
+
 module.exports = router;

@@ -1,6 +1,7 @@
 const express = require('express');
 require('dotenv').config();
 const database = require("./config/database");
+const bodyParser = require("body-parser");
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const router = require("./router/index")
@@ -28,7 +29,7 @@ const swaggerOptions = {
 
 // // Middleware to parse JSON bodies
 app.use(express.json());
-
+// app.use(bodyParser.json());
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));

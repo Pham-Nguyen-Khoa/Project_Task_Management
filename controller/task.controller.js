@@ -141,7 +141,7 @@ module.exports.index = async (req, res) => {
  * /tasks/detail/{id}:
  *   get:
  *     tags:
- *          - Task
+ *          - Tasks
  *     summary: Lấy chi tiết một task
  *     parameters:
  *       - in: path
@@ -193,5 +193,93 @@ module.exports.detail = async (req, res) => {
     return res.json(getTask);
   } catch (error) {
     res.json("Không tìm thấy");
+  }
+};
+
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @swagger
+ * /tasks/change-status/{id}:
+ *   patch:
+ *     tags:
+ *          - Tasks
+ *     summary: Cập nhật trạng thái của 1 task
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: id task mà muốn chuyển trạng thái
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [initial, doing, pending, notFinish, Finish]
+ *                 example: doing
+ *     responses:
+ *       200:
+ *         description: Cập nhật trạng thái thành công 
+ *         content: 
+ *           application/json:
+ *             schema:
+ *              type: object
+ *              properties:
+ *                   code:
+ *                     type: number
+ *                     example: 200
+ *                   message:
+ *                     type: string
+ *                     example: "Cập nhật trạng thái thành công"       
+ *       404:
+ *         description: Cập nhật trạng thái thất bại 
+ *         content: 
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                   code:
+ *                     type: number
+ *                     example: 400
+ *                   message:
+ *                     type: string
+ *                     example: "Cập nhật trạng thái thất bại "    
+ */
+
+// [PATCH] localhost:3000/tasks/change-status/:id
+module.exports.changeStatus = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const status = req.body.status;
+    const arrStatus = ["initial", "doing" , "finish", "pending" , "notFinish"];
+    const checkStatus = arrStatus.includes(status);
+    if(!checkStatus){
+      return res.json({
+        code: 400,
+        message: "Không có trạng thái đó"
+    })
+    }
+      await Task.updateOne({
+        _id: id,
+        deleted: false
+      },{
+        status: status
+      })
+    
+    res.json({
+        code: 200,
+        message: "Cập nhật trạng thái thành công"
+    })
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Không tồn tại"
+    });
   }
 };
