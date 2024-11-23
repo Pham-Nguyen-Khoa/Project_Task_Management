@@ -612,3 +612,70 @@ module.exports.editPatch = async (req, res) => {
     });
   }
 };
+
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @swagger
+ * /tasks/delete/{id}:
+ *   delete:
+ *     tags:
+ *       - Tasks
+ *     summary: Xóa một công việc
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của công việc cần xóa
+ *     responses:
+ *       200:
+ *         description: Xóa công việc thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Xóa công việc thành công!"
+ *       400:
+ *         description: Xóa công việc thất bại
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Xóa công việc thất bại!"
+ */
+// [DELETE] localhost:3000/tasks/delete/:id
+module.exports.delete = async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    await Task.updateOne({
+      _id: id
+    },{
+      deleted: true,
+      deletedAt: new Date()
+    })
+    res.json({
+      code: 200,
+      message: "Xóa công việc thành công!",
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Xóa  công việc thất bại!",
+    });
+  }
+};

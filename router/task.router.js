@@ -17,4 +17,10 @@ router.post("/create" , taskValidate.editPatch , taskController.createPost);
 router.patch("/edit/:id" , taskValidate.editPatch ,taskController.editPatch);
 
 
+router.patch("/edit/:id" , taskValidate.editPatch ,taskController.editPatch);
+
+
+router.delete("/delete/:id" ,taskController.delete);
+
+
 module.exports = router;
