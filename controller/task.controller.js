@@ -476,6 +476,9 @@ module.exports.changeMulti = async (req, res) => {
  *                       type: string
  *                       description: Trạng thái công việc (initial, pending, doing, finish, notFinish)
  *                       example: "initial"
+ *                      content:
+ *                       type: string
+ *                       example: "Nội dung Neronen ..."
  *                      timeStart:
  *                       type: Date
  *                       description: Thời gian bắt đầu công việc 
@@ -513,6 +516,99 @@ module.exports.createPost = async (req, res) => {
     res.json({
       code: 400,
       message: "Tạo công việc thất bại!",
+    });
+  }
+};
+
+
+
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @swagger
+ * /tasks/edit/{id}:
+ *   patch:
+ *     tags:
+ *       - Tasks
+ *     summary: Chỉnh sửa công việc
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của công việc muốn chỉnh sửa
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: String
+ *                 description: Tên công việc 
+ *                 example: Công việc ABC
+ *               status:
+ *                 type: string
+ *                 description: Trạng thái công việc (initial, pending, doing, finish, notFinish)
+ *                 example: "initial"
+ *               content:
+ *                 type: string
+ *                 example: "Làm giao diện trang login"
+ *               timeStart:
+ *                 type: Date
+ *                 description: Thời gian bắt đầu công việc 
+ *                 example: "2023-09-18T14:43:01.579+00:00"
+ *               timeFinish:
+ *                 type: Date
+ *                 description: Thời gian kết thúc công việc 
+ *                 example: "2023-09-18T14:43:01.579+00:00"
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Cập nhật công việc thành công!"
+ *                  
+ *       400:
+ *         description: Lỗi yêu cầu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Cập nhật công việc thất bại"
+ */
+// [PATCH] localhost:3000/tasks/edit/:id
+module.exports.editPatch = async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    await Task.updateOne({
+      _id: id
+    },req.body)
+    res.json({
+      code: 200,
+      message: "Cập nhật  công việc thành công!",
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Cập nhật công việc thất bại!",
     });
   }
 };
