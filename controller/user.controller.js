@@ -449,3 +449,27 @@ module.exports.reset = async (req, res) => {
     });
   }
 };
+
+
+
+// [GET] localhost:3000/users/detail
+module.exports.detail = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        const user = await User.findOne({
+            token: token, 
+            deleted: false
+        }).select("-password -token ");
+      res.json({
+        code: 200,
+        message: "Lấy thông tin thành công",
+        info: user
+      });
+    } catch (error) {
+      res.json({
+        code: 400,
+        message: "Lấy thông tin thất bại"
+      });
+    }
+  };
+  
