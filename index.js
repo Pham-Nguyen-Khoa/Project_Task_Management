@@ -2,12 +2,17 @@ const express = require('express');
 require('dotenv').config();
 const database = require("./config/database");
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
+const  cors = require('cors')
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const router = require("./router/index")
 
 const app = express();
 const port = process.env.PORT;
+
+app.use(cors())
+app.use(cookieParser())
 
 database.connect();
 
@@ -29,7 +34,7 @@ const swaggerOptions = {
             { url: `http://localhost:${port}` }, // URL server của bạn
         ],
     },
-    apis: ['./index.js','./controller/task.controller.js'], // File chứa chú thích API
+    apis: ['./index.js','./controller/task.controller.js','./controller/user.controller.js'], // File chứa chú thích API
 };
 
 // // Middleware to parse JSON bodies
