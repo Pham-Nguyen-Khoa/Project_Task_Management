@@ -3,6 +3,9 @@ const md5 = require("md5");
 const generateHelper = require("../helpers/generateHelper");
 const ForgotPassword = require("../models/forgot-password.model");
 const nodeMailerHelper = require("../helpers/nodemailer");
+
+
+
 /**
  * @swagger
  * /users/login:
@@ -90,6 +93,8 @@ module.exports.login = async (req, res) => {
   }
 };
 
+
+
 /**
  * @swagger
  * /users/register:
@@ -145,7 +150,6 @@ module.exports.login = async (req, res) => {
  *                   type: string
  *                   example: "Email đã tồn tại"
  */
-
 // [POST] localhost:3000/users/register
 module.exports.register = async (req, res) => {
   try {
@@ -183,6 +187,9 @@ module.exports.register = async (req, res) => {
     });
   }
 };
+
+
+
 
 /**
  * @swagger
@@ -273,6 +280,8 @@ module.exports.forgot = async (req, res) => {
   }
 };
 
+
+
 /**
  * @swagger
  * /users/password/otp:
@@ -359,6 +368,9 @@ module.exports.otp = async (req, res) => {
     });
   }
 };
+
+
+
 
 /**
  * @swagger
@@ -452,6 +464,8 @@ module.exports.reset = async (req, res) => {
   }
 };
 
+
+
 /**
  * @swagger
  * /users/detail:
@@ -527,8 +541,6 @@ module.exports.detail = async (req, res) => {
 
 
 
-
-
 /**
  * @swagger
  * /users/logout:
@@ -598,7 +610,7 @@ module.exports.logout = async (req, res) => {
  *   get:
  *     tags:
  *       - User
- *     summary: Get a list of all users
+ *     summary: Lấy ra danh sách tất cả user trong hệ thống
  *     description: Retrieve a list of all users with their full name and email, excluding deleted users.
  *     security:
  *       - bearerAuth: [] # Kích hoạt bảo mật
