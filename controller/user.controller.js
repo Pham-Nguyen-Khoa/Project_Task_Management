@@ -3,7 +3,6 @@ const md5 = require("md5");
 const generateHelper = require("../helpers/generateHelper");
 const ForgotPassword = require("../models/forgot-password.model");
 const nodeMailerHelper = require("../helpers/nodemailer");
-
 /**
  * @swagger
  * /users/login:
@@ -162,17 +161,20 @@ module.exports.register = async (req, res) => {
         message: "Email đã tồn tại",
       });
     }
+    const token  = generateHelper.generateRandomString(30);
     const user = new User({
       fullName: fullName,
       email: email,
       password: md5(password),
+      token: token
     });
     await user.save();
-    res.cookie("token", user.token);
+    res.cookie("token", token);
 
     res.json({
       code: 200,
       message: "Tạo tài khoản thành công",
+      token: token
     });
   } catch (error) {
     res.json({
@@ -252,7 +254,7 @@ module.exports.forgot = async (req, res) => {
     const forgotPassword = new ForgotPassword({
       email: email,
       otp: otp,
-      expireAt: new Date(),
+      expireAt:  Date.now() + 5*60*1000,
     });
     await forgotPassword.save();
     const descriptionHTML = ` <h1>Mã OTP của bạn là <b>${otp}</b></h1>`;
@@ -412,8 +414,8 @@ module.exports.otp = async (req, res) => {
 // [POST] localhost:3000/users/password/reset
 module.exports.reset = async (req, res) => {
   try {
-    const token = req.cookies.token
-    const {  password, confirmPassword } = req.body;
+    const token = req.cookies.token;
+    const { password, confirmPassword } = req.body;
     if (password != confirmPassword) {
       return res.json({
         code: 400,
@@ -450,26 +452,131 @@ module.exports.reset = async (req, res) => {
   }
 };
 
-
+/**
+ * @swagger
+ * /users/detail:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Lấy thông tin chi tiết người dùng
+ *     description: Lấy thông tin tài khoản của người dùng dựa trên token trong cookie.
+ *     responses:
+ *       200:
+ *         description: Lấy thông tin người dùng thành công.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Lấy thông tin thành công"
+ *                 info:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "63f15fdcd99e4b23a46dbcd7"
+ *                     fullName:
+ *                       type: string
+ *                       example: "Nguyễn Văn A"
+ *                     email:
+ *                       type: string
+ *                       example: "example@gmail.com"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2023-09-18T14:43:01.579Z"
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2023-09-18T14:43:01.579Z"
+ *       400:
+ *         description: Lỗi khi lấy thông tin người dùng.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Lấy thông tin thất bại"
+ */
 
 // [GET] localhost:3000/users/detail
 module.exports.detail = async (req, res) => {
-    try {
-        const token = req.cookies.token;
-        const user = await User.findOne({
-            token: token, 
-            deleted: false
-        }).select("-password -token ");
-      res.json({
-        code: 200,
-        message: "Lấy thông tin thành công",
-        info: user
-      });
-    } catch (error) {
-      res.json({
-        code: 400,
-        message: "Lấy thông tin thất bại"
-      });
-    }
-  };
-  
+  try {
+    res.json({
+      code: 200,
+      message: "Lấy thông tin thành công",
+      info: req.user,
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Lấy thông tin thất bại",
+    });
+  }
+};
+
+
+
+
+
+/**
+ * @swagger
+ * /users/logout:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Đăng xuất người dùng
+ *     description: Xóa cookie chứa token để đăng xuất người dùng khỏi hệ thống.
+ *     responses:
+ *       200:
+ *         description: Đăng xuất thành công.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Đăng xuất thành công"
+ *       400:
+ *         description: Lỗi khi đăng xuất.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Đăng xuất thất bại"
+ */
+// [GET] localhost:3000/users/logout
+module.exports.logout = async (req, res) => {
+  try {
+    res.clearCookie("token");
+    res.json({
+      code: 200,
+      message: "Đăng xuất thành công",
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Đăng xuất thất bại",
+    });
+  }
+};

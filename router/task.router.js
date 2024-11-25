@@ -3,6 +3,7 @@ const router = express.Router();
 const taskController = require("../controller/task.controller");
 const taskValidate = require("../validate/task.validate");
 
+
 router.get("/", taskController.index);
 
 router.get("/detail/:id", taskController.detail );

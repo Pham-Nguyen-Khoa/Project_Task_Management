@@ -189,7 +189,16 @@ module.exports.detail = async (req, res) => {
   try {
     const id = req.params.id;
     const getTask = await Task.findOne({ _id: id, deleted: false });
-    return res.json(getTask);
+    if(!getTask){
+      return res.json({
+        code: 400,
+        message: "Không có công việc này!"
+      });
+    }
+    return res.json({
+      code: 200,
+      getTask: getTask
+    });
   } catch (error) {
     res.json("Không tìm thấy");
   }
@@ -509,6 +518,7 @@ module.exports.changeMulti = async (req, res) => {
 // [POST] localhost:3000/tasks/create/
 module.exports.createPost = async (req, res) => {
   try {
+    req.body.createdBy = req.user.id
     const task = new Task(req.body);
     const data = await task.save();
     res.json({
