@@ -456,6 +456,10 @@ module.exports.changeMulti = async (req, res) => {
  *                 type: string
  *                 description: Trạng thái công việc (initial, pending, doing, finish, notFinish)
  *                 example: "initial"
+ *               listUsers:
+ *                 type: Array
+ *                 description: Những người tham gia ( Mảng chứa id của các user tham gia task )
+ *                 example: ["67442d73d93f9eaaf7592e52","6743315ddd1cb0f1c7e9a36c","67442d7bd93f9eaaf7592e55"]
  *               timeStart:
  *                 type: Date
  *                 description: Thời gian bắt đầu công việc 
@@ -489,6 +493,10 @@ module.exports.changeMulti = async (req, res) => {
  *                       type: string
  *                       description: Trạng thái công việc (initial, pending, doing, finish, notFinish)
  *                       example: "initial"
+ *                      listUsers:
+ *                       type: Array
+ *                       description: Những người tham gia ( Mảng chứa id của các user tham gia task )
+ *                       example: ["67442d73d93f9eaaf7592e52","6743315ddd1cb0f1c7e9a36c","67442d7bd93f9eaaf7592e55"]
  *                      content:
  *                       type: string
  *                       example: "Nội dung Neronen ..."

@@ -580,3 +580,83 @@ module.exports.logout = async (req, res) => {
     });
   }
 };
+
+
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ * security:
+ *   - bearerAuth: [] # Đánh dấu rằng endpoint yêu cầu token
+ *
+ * /users/list:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Get a list of all users
+ *     description: Retrieve a list of all users with their full name and email, excluding deleted users.
+ *     security:
+ *       - bearerAuth: [] # Kích hoạt bảo mật
+ *     responses:
+ *       200:
+ *         description: "Lấy danh sách user thành công"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Lấy danh sách user thành công"
+ *                 listUser:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       fullName:
+ *                         type: string
+ *                         example: "Nguyen Van A"
+ *                       email:
+ *                         type: string
+ *                         example: "nguyenvana@example.com"
+ *       400:
+ *         description: "Lấy danh sách user thất bại"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Lấy danh sách user thất bại"
+ */
+// [GET] localhost:3000/users/list
+module.exports.getAll = async (req, res) => {
+  try {
+    const listUser = await User.find({
+      deleted: false
+    }).select("fullName email");
+    res.json({
+      code: 200,
+      message: "Lấy danh sách user thành công",
+      listUser: listUser
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Lấy danh sách user thất bại",
+      
+    });
+  }
+};

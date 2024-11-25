@@ -19,6 +19,8 @@ router.get("/detail",  authenMiddleware.requireAuth, userController.detail);
 
 router.get("/logout", userController.logout);
 
+router.get("/list", authenMiddleware.requireAuth, userController.getAll);
+
 
 
 module.exports = router;

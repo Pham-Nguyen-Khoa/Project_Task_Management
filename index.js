@@ -33,6 +33,20 @@ const swaggerOptions = {
         servers: [
             { url: `http://localhost:${port}` }, // URL server của bạn
         ],
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: "http",
+              scheme: "bearer",
+              bearerFormat: "JWT",
+            },
+          },
+        },
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ]
     },
     apis: ['./index.js','./controller/task.controller.js','./controller/user.controller.js'], // File chứa chú thích API
 };
