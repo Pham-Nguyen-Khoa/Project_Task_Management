@@ -84,6 +84,12 @@ const searchHelper = require("../helpers/searchHelper");
 // [GET] localhost:3000/tasks
 module.exports.index = async (req, res) => {
   const find = {
+    $or: [
+      { createdBy: req.user.id} , 
+      {
+        listUsers: req.user.id
+      }
+    ],
     deleted: false,
   };
   let searchObject = searchHelper(req.query);
@@ -122,6 +128,10 @@ module.exports.index = async (req, res) => {
   );
 
   // End Pagination
+
+
+
+
 
   const getAllTask = await Task.find(find)
     .sort(sort)
