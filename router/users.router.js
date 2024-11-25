@@ -21,8 +21,6 @@ router.get("/logout", userController.logout);
 
 router.get("/list", authenMiddleware.requireAuth, userController.getAll);
 
-router.get("/test", userController.test);
-
 
 
 module.exports = router;
