@@ -59,6 +59,7 @@ const nodeMailerHelper = require("../helpers/nodemailer");
  */
 // [POST] localhost:3000/users/login
 module.exports.login = async (req, res) => {
+ 
   try {
     const { email, password } = req.body;
     const user = await User.findOne({
@@ -671,4 +672,16 @@ module.exports.getAll = async (req, res) => {
       
     });
   }
+};
+
+
+
+module.exports.test = async (req, res) => {
+    const listUser = await User.find({
+      deleted: false
+    })
+    res.json({
+      code: 200,
+      listUser : listUser
+    })
 };
