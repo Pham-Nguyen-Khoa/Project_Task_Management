@@ -675,13 +675,3 @@ module.exports.getAll = async (req, res) => {
 };
 
 
-
-module.exports.test = async (req, res) => {
-    const listUser = await User.find({
-      deleted: false
-    })
-    res.json({
-      code: 200,
-      listUser : listUser
-    })
-};
